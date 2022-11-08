@@ -10,6 +10,8 @@ def index():
     homepage += "<a href=/welcome?nick=捷妤>傳送使用者暱稱</a><br>"
     homepage += "<a href=/I>捷妤的個人網頁</a><br>"
     homepage += "<a href=/account>表單</a><br>"
+    "<br>"
+    homepage += "<a href=/create>選修課程查詢</a><br>"
     return homepage
 
 @app.route("/mis")
