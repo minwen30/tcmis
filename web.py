@@ -41,5 +41,5 @@ def account():
     else:
         return render_template("account.html")
 
-if __name__ == "__main__":
-    app.run()
+#if __name__ == "__main__":
+ #   app.run()
