@@ -1,5 +1,10 @@
 from flask import Flask, render_template, request
 from datetime import datetime, timezone, timedelta
+import firebase_admin
+from firebase_admin import credentials, firestore
+
+cred = credentials.Certificate("serviceAccountKey.json")
+firebase_admin.initialize_app(cred)
 app = Flask(__name__)
 
 @app.route("/")
@@ -9,7 +14,9 @@ def index():
     homepage += "<a href=/today>顯示日期時間</a><br>"
     homepage += "<a href=/welcome?nick=捷妤>傳送使用者暱稱</a><br>"
     homepage += "<a href=/I>捷妤的個人網頁</a><br>"
-    homepage += "<a href=/account>表單</a><br>"
+    homepage += "<a href=/account>表單</a><br><br>"
+    
+    homepage += "<a href=/search>選修課程查詢</a><br>"
     return homepage
 
 @app.route("/mis")
@@ -41,5 +48,24 @@ def account():
     else:
         return render_template("account.html")
 
-#if __name__ == "__main__":
-#    app.run()
+@app.route("/search", methods=["GET", "POST"])
+def search():
+    if request.method == "POST":
+        cond = request.form["course"]
+        db = firestore.client()
+        collection_ref = db.collection("111")
+        docs = collection_ref.get()
+        result = ""
+        for doc in docs:
+            dict = doc.to_dict()
+            if cond in dict["Course"] and dict["Leacture"]:
+                result += dict["Leacture"] + "老師開的" + dict["Course"] + "課程,每週"
+                result += dict["Time"] + "於" + dict["Room"] + "上課<br>"
+        if result == "":
+            result = "抱歉，查無相關條件的選修課程"
+        return result
+    else:
+        return render_template("search.html")
+
+if __name__ == "__main__":
+    app.run()
